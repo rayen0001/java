@@ -36,12 +36,13 @@ public class User {
     
     private String email;
     
-    private String typeCompte;
+    private Role role;
+    String passwordResetToken;
     
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_magasin",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "magasin_id"))
     private List<Magasin> magasin = new ArrayList<>();
-    
+
 }

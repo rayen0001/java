@@ -1,16 +1,29 @@
 package Store.Lumia.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import Store.Lumia.entity.User;
 import Store.Lumia.repository.UserRepository;
-import java.util.List;
+import java.util.*;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Override
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService(){
+            @Override
+            public UserDetails loadUserByUsername(String s) {
+                return (UserDetails) userRepository.findByMatricule(s).orElseThrow(() -> new RuntimeException("User not found"));
+            }
+        };
+    }
 
     @Override
     public User saveUser(User user) {
@@ -23,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByMatricule(String matricule) {
+    public Optional<User> getUserByMatricule(String matricule) {
         return userRepository.findByMatricule(matricule);
     }
 

@@ -1,6 +1,7 @@
 package Store.Lumia.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,10 +45,13 @@ public class UserController {
         }
     }
 
-    @GetMapping("/matricule/{matricule}")
+    @GetMapping("/users/{matricule}")
     public ResponseEntity<User> getUserByMatricule(@PathVariable String matricule) {
-        User user = userService.getUserByMatricule(matricule);
-        if (user != null) {
+        // Retrieve the User object wrapped in Optional<User>
+        Optional<User> optionalUser = userService.getUserByMatricule(matricule);
+
+        if (optionalUser.isPresent()) { // Check if Optional<User> contains a User object
+            User user = optionalUser.get(); // Extract the User object from Optional
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

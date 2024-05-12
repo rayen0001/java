@@ -5,9 +5,12 @@ import org.springframework.stereotype.Repository;
 
 import Store.Lumia.entity.User;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	User findByMatricule(String matricule);
+	Optional<User> findByMatricule(String matricule);
+	Optional<User> findByPasswordResetToken(String passwordResetToken);
 
 }
