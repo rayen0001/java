@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	Optional<User> findByMatricule(String matricule);
+	Optional<User> findByUsername(String username);
 	Optional<User> findByPasswordResetToken(String passwordResetToken);
 
 }

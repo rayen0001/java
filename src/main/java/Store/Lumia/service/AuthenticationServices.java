@@ -5,7 +5,7 @@ import Store.Lumia.entity.RefreshTokenRequest;
 
 import java.util.HashMap;
 
-public interface IAuthenticationServices {
+public interface AuthenticationServices {
 
     AuthenticationResponse login(String email, String password);
     AuthenticationResponse refreshToken(RefreshTokenRequest refreshToken);

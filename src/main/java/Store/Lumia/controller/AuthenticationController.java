@@ -3,11 +3,9 @@ package Store.Lumia.controller;
 import Store.Lumia.entity.AuthenticationResponse;
 import Store.Lumia.entity.RefreshTokenRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import Store.Lumia.entity.User;
-import Store.Lumia.service.IAuthenticationServices;
+import Store.Lumia.service.AuthenticationServices;
 
 import java.util.HashMap;
 
@@ -17,11 +15,11 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-  private final IAuthenticationServices authenticationServices;
+  private final AuthenticationServices authenticationServices;
 
   @PostMapping("/login")
   public AuthenticationResponse login(@RequestBody User user) {
-    return authenticationServices.login(user.getMatricule(), user.getMot2passe());
+    return authenticationServices.login(user.getUsername(), user.getPassword());
   }
 
   @PostMapping("/refreshToken")

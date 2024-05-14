@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
         return new UserDetailsService(){
             @Override
             public UserDetails loadUserByUsername(String s) {
-                return (UserDetails) userRepository.findByMatricule(s).orElseThrow(() -> new RuntimeException("User not found"));
+                return (UserDetails) userRepository.findByUsername(s).orElseThrow(() -> new RuntimeException("User not found"));
             }
         };
     }
@@ -36,9 +36,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserByMatricule(String matricule) {
-        return userRepository.findByMatricule(matricule);
+    public Optional<User> getUserByusername(String matricule) {
+        return userRepository.findByUsername(matricule);
     }
+
 
     @Override
     public void deleteUser(Long id) {

@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import Store.Lumia.service.IJWTServices;
+import Store.Lumia.service.JWTServices;
 import Store.Lumia.service.UserService;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final IJWTServices jwtService;
+  private final JWTServices jwtService;
   private final UserService userService;
 
   @Override

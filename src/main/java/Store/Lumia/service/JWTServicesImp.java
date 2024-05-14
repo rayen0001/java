@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class IJWTServicesImp implements IJWTServices {
+public class JWTServicesImp implements JWTServices {
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()

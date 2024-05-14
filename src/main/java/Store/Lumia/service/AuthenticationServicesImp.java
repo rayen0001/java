@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import Store.Lumia.config.EmailService;
 import Store.Lumia.entity.*;
 
@@ -20,19 +19,19 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class IAuthenticationServicesImp implements IAuthenticationServices {
+public class AuthenticationServicesImp implements AuthenticationServices {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final IJWTServices jwtServices;
+    private final JWTServices jwtServices;
     private final EmailService emailService;
 
 
     public AuthenticationResponse login(String email, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-        var user = userRepository.findByMatricule(email).orElseThrow(() -> new RuntimeException("User not found"));
-        var jwt = jwtServices.generateToken((UserDetails) user);
+        var user = userRepository.findByUsername(email).orElseThrow(() -> new RuntimeException("User not found"));
+        var jwt = jwtServices.generateToken(user);
         var refreshToken = jwtServices.generateRefreshToken(new HashMap<>(), (UserDetails) user);
 
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
@@ -52,14 +51,14 @@ public class IAuthenticationServicesImp implements IAuthenticationServices {
         dto.setNom(user.getNom());
         dto.setPrenom(user.getPrenom());
         dto.setEmail(user.getEmail());
-        dto.setMot2passe(user.getMot2passe());
+        dto.setPassword(user.getPassword());
         dto.setRole(user.getRole());
         return dto;
     }
 
     public AuthenticationResponse refreshToken(RefreshTokenRequest refreshToken) {
         String userEmail = jwtServices.extractUsername(refreshToken.getRefreshToken());
-        User user = userRepository.findByMatricule(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
         if(jwtServices.isTokenValid(refreshToken.getRefreshToken(), (UserDetails) user)) {
             var jwt = jwtServices.generateToken((UserDetails) user);
 
@@ -71,43 +70,43 @@ public class IAuthenticationServicesImp implements IAuthenticationServices {
         }
         return null;
     }
-
     @Override
     public HashMap<String, String> forgetPassword(String email) {
-        HashMap message = new HashMap();
+        HashMap<String, String> message = new HashMap<>();
 
-        User userexisting = userRepository.findByMatricule(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User userExisting = userRepository.findByUsername(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         UUID token = UUID.randomUUID();
-        userexisting.setPasswordResetToken(token.toString());
-        userexisting.setId(userexisting.getId());
+        userExisting.setPasswordResetToken(token.toString());
+        userRepository.save(userExisting);
 
         Mail mail = new Mail();
-
         mail.setSubject("Reset Password");
-        mail.setTo(userexisting.getEmail());
-        mail.setContent("Votre nouveau TOKEN est : " + "http://localhost:4200/resetpassword/"+userexisting.getPasswordResetToken());
-        emailService.sendSimpleEmail(mail);
-        userRepository.save(userexisting);
-        message.put("user","user FOUND and email is Sent");
+        mail.setTo(userExisting.getEmail());
+        mail.setContent("Votre nouveau TOKEN est : http://localhost:4200/resetpassword/" + token.toString());
+
+        emailService.sendSimpleEmail(mail); // Assuming EmailService is properly configured
+
+        message.put("user", "User found, and email is sent");
         return message;
     }
 
     @Override
-    public HashMap<String,String> resetPassword(@PathVariable String passwordResetToken, String newPassword){
-        User userexisting = userRepository.findByPasswordResetToken(passwordResetToken).orElseThrow(() -> new RuntimeException("User not found"));
-        HashMap message = new HashMap();
-        if (userexisting != null) {
-            userexisting.setId(userexisting.getId());
-            userexisting.setMot2passe(new BCryptPasswordEncoder().encode(newPassword));
-            userexisting.setPasswordResetToken(null);
-            userRepository.save(userexisting);
-            message.put("resetpassword","succès");
-            return message;
-        }else
-        {
-            message.put("resetpassword","Échoué ");
-            return message;
+    public HashMap<String, String> resetPassword(String passwordResetToken, String newPassword) {
+        User userExisting = userRepository.findByPasswordResetToken(passwordResetToken)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        HashMap<String, String> message = new HashMap<>();
+        if (userExisting != null) {
+            userExisting.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+            userExisting.setPasswordResetToken(null);
+            userRepository.save(userExisting);
+            message.put("resetpassword", "Success");
+        } else {
+            message.put("resetpassword", "Failed");
         }
+        return message;
     }
+
 }

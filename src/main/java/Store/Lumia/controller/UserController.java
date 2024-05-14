@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import Store.Lumia.entity.User;
 import Store.Lumia.service.UserService;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -35,7 +36,7 @@ public class UserController {
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/ID/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
         if (user != null) {
@@ -45,17 +46,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{matricule}")
-    public ResponseEntity<User> getUserByMatricule(@PathVariable String matricule) {
+    @GetMapping("/{matricule}")
+    public ResponseEntity<Optional<User>> findByUsername(@PathVariable String matricule) {
         // Retrieve the User object wrapped in Optional<User>
-        Optional<User> optionalUser = userService.getUserByMatricule(matricule);
+        Optional<Optional<User>> optionalUser = Optional.ofNullable(userService.getUserByusername(matricule));
 
-        if (optionalUser.isPresent()) { // Check if Optional<User> contains a User object
-            User user = optionalUser.get(); // Extract the User object from Optional
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        // Use map to handle the Optional<User> and extract the User object
+        return optionalUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/delete/{id}")

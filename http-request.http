@@ -1,0 +1,11 @@
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "ray",
+  "password": "1234"
+}
+
+<> 2024-05-12T214601.400.json
+
+###

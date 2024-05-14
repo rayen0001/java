@@ -40,9 +40,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                //.requestMatchers("/auth/**").permitAll() // Autoriser les requêtes à /auth/**
-                                .requestMatchers("/**").permitAll() // Autoriser les requêtes à /auth/**
-                                //.requestMatchers("/**").hasAnyRole(Role.ADMIN.name(), Role.ETUDIANT.name())
+                                .requestMatchers("/auth/**").permitAll() // Autoriser les requêtes à /auth/**
+//                                .requestMatchers("/**").permitAll() // Autoriser les requêtes à /auth/**
+                                //.requestMatchers("/**").hasAnyRole(Role.ADMIN.name(), Role.RESPOSABLE_STOCK.name())
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
@@ -55,7 +55,7 @@ public class SecurityConfiguration {
 
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Autoriser le frontend Angular
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5000")); // Autoriser le frontend flask
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));

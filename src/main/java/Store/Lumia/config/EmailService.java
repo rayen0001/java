@@ -6,7 +6,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import Store.Lumia.entity.Mail;
 
-
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -17,7 +16,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("rayenaouechria@gmail.com");
         message.setTo(mail.getTo());
-        message.setSubject("Réinitialiser le mot de passe");
+        message.setSubject(mail.getSubject());
         message.setText(mail.getContent());
         mailSender.send(message);
     }
