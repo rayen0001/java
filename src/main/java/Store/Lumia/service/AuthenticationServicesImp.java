@@ -47,6 +47,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
 
     private User convertToUserDto(User user) {
         User dto = new User();
+        dto.setUsername(user.getUsername());
         dto.setId(user.getId());
         dto.setNom(user.getNom());
         dto.setPrenom(user.getPrenom());
@@ -60,7 +61,7 @@ public class AuthenticationServicesImp implements AuthenticationServices {
         String userEmail = jwtServices.extractUsername(refreshToken.getRefreshToken());
         User user = userRepository.findByUsername(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
         if(jwtServices.isTokenValid(refreshToken.getRefreshToken(), (UserDetails) user)) {
-            var jwt = jwtServices.generateToken((UserDetails) user);
+            var jwt = jwtServices.generateToken(user);
 
             AuthenticationResponse authenticationResponse = new AuthenticationResponse();
 

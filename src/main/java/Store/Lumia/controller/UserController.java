@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import Store.Lumia.entity.User;
 import Store.Lumia.service.UserService;
@@ -30,8 +31,15 @@ public class UserController {
 
 
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/add")
     public ResponseEntity<User> addUser(@RequestBody User user) {
+        // Hash the password before saving the user
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
         User newUser = userService.saveUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
